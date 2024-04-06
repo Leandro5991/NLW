@@ -1,3 +1,4 @@
+
 let participantes = [
     {
         nome: "Diego Fernandes",
@@ -62,39 +63,38 @@ let participantes = [
 ];
 
 
-const criarNovoParticipante = (participante) => { 
+const criarNovoParticipante = (participante) => {
+    const dataInscricao = dayjs(Date.now())
+        .to(participante.dataInscricao)
 
-    const  dataInscricao = dayjs(Date.now()).to(participante.dataInscricao)
-    let  dataCheckIn = dayjs(Date.now()).to(participante.dataCheckIn)
+    let dataCheckIn = dayjs(Date.now())
+        .to(participante.dataCheckIn)
 
-if(participante.dataCheckIn == null){
-    dataCheckIn= `
+    if (participante.dataCheckIn == null) {
+        dataCheckIn = `
     <button 
     data-email="${participante.email}"
     onclick="fazerCheckIn(event)">
         Confirmar check-in
     </button>
-    
     `
+    }
 
-
-}
-
-    return 
-    
-    `<tr>
-    <td>
-    <strong>
-    ${participante.nome}
-    </strong>
-    <br>
-    <small>
-    ${participante.email}
-    </small>
+    return `
+    <tr>
+        <td>
+            <strong>
+            ${participante.nome}
+            </strong>
+            <br>
+            <small>
+            ${participante.email}
+            </small>
     </td>
-    <td>${participante.dataInscricao}</td>
-    <td>${participante.dataCheckIn}</td>
-    </tr>`
+    <td>${dataInscricao}</td>
+    <td>${dataCheckIn}</td>
+    </tr>
+    `
 }
 
 
@@ -103,74 +103,71 @@ const atualizarLista = (participantes) => {
     //estrutura de repetição
     for (let participante of participantes) {
         //faca alguma coisa
-        output = output + criarNovoParticipante(participante)     
+        output = output + criarNovoParticipante(participante)
     }
 
 
     //substituir informações
-    document.querySelector('body').innerHTML = criarNovoParticipante(participantes[2])
+    document
+    .querySelector('tbody')
+    .innerHTML = output
 
 }
 
 atualizarLista(participantes)
 
-const adicionarParticipante =(event) =>{
+const adicionarParticipante = (event) => {
     event.preventDefault()
 
     const dadosDoFormulario = new FormData(event.target)
 
-    const participante =  {
+    const participante = {
         nome: dadosDoFormulario.get('nome'),
         email: dadosDoFormulario.get('email'),
         dataInscricao: new Date(),
         dataCheckIn: null
     }
 
-    const participanteExiste = participantes.find((p)=>{
+    const participanteExiste = participantes.find
+    ((p) => p.email == participante.email
 
-        return p.email == participante.email
-
-
-    }
     )
 
-    if(participanteExiste)
-    {
+    if (participanteExiste) {
         alert('Email ja cadastrado!')
         return
     }
 
 
 
-    
-    participante = [participante, ...participantes]
+
+    participantes = [participante, ...participantes]
     atualizarLista(participantes)
 
     //limpar participantes
 
-    event.target.querySelector('[name="nome"]').value =""
-    event.target.querySelector('[name="email"]').value =""
+    event.target.querySelector('[name="nome"]').value = ""
+    event.target.querySelector('[name="email"]').value = ""
 
 }
 
-const fazerCheckIn =(event) =>{
+const fazerCheckIn = (event) => {
 
-    const mensagemConfirmacao= 'Tem certeza que deseja fazer o check-in?'
+    const mensagemConfirmacao = 'Tem certeza que deseja fazer o check-in?'
 
-    if(confirm(mensagemConfirmacao)==false){
+    if (confirm(mensagemConfirmacao) == false) {
         return
     }
 
 
 
-    const participante = participantes.find((p)=>{
-
-        return p.email == event.target.dataset.email
-    })
+    const participante = participantes.find(
+        (p) =>  p.email == event.target.dataset.email
+    )
 
     participante.dataCheckIn = new Date()
 
     atualizarLista(participantes)
-    
+
 
 }
